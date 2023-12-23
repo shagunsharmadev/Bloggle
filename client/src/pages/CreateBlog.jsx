@@ -11,8 +11,11 @@ import axios from 'axios';
 const CreateBlog = () => {
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
-  
+  const [user, setUser] = useState("")
+
   const navigate = useNavigate()
+  
+  
   const handleCreateBlog = async () => {
 
     if(!title && !content) {
@@ -33,7 +36,7 @@ const CreateBlog = () => {
     }
     setTitle("")
     setContent("")
-    navigate('/profile')
+    navigate(`/${user && user.username}`)
 
   }
   useEffect(() => {
@@ -43,11 +46,24 @@ const CreateBlog = () => {
         event.preventDefault();
       });
     }
+
+    const getUser = async()=>{
+      try {
+        const data = await axios.get(
+          `http://localhost:3000/api/user/${jwtDecode(Cookies.get("token")).id}`
+        );
+        setUser(data.data.user);
+      } catch (error) {
+        alert(error.response.data.message);
+        return;
+      }
+    }
+    getUser()
   }, []);
 
   useEffect(()=>{
-    console.log(content)
-  },[content])
+    setUser(user)
+  },[user])
 
   return (
     <div className="w-3/4 mt-5 mx-auto">

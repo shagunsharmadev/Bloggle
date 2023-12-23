@@ -1,11 +1,11 @@
 import Blog from "./Blog"
-const Blogs = () => {
+const Blogs = ({blogs}) => {
 
     return(
-        <div className="w-full">
+        <div className="w-full mb-10">
             {
-                Array.from({length:6}).map(()=> {
-                    return <Blog/>
+                blogs && blogs.map((blog)=> {
+                    return <Blog blog={blog} key={blog._id}/>
                 })
             }
             

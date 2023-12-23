@@ -93,7 +93,14 @@ export const getUserProfile = async (req,res) => {
     try {
 
         const {username} = req.params
-        const user = await User.findOne({username})
+        const user = await User.findOne({ username }).populate({
+          path: "blogs",
+          model: "Blog",
+          populate: {
+            path: "owner",
+            model: "User",
+          },
+        });
         if(!user) {
             return res.status(404).json({
                 message:"User not found"
@@ -107,5 +114,46 @@ export const getUserProfile = async (req,res) => {
         return res.status(500).json({
             message:error.message
         })        
+    }
+}
+
+export const editBio =async (req,res) => {
+    try {
+        const {username, bio} = req.body
+        const user =await User.findOne({username})
+        if(!user) {
+            return res.status(404).json({
+                message:"User not found"
+            })
+        }     
+        user.bio = bio
+        
+        await user.save()
+        res.status(200).json({
+            message:"Bio Updated Successfully"
+        })
+    }catch(error) {
+        return res.status(500).json({
+            message:error.message
+        })
+    }
+}
+
+export const getUser = async (req,res) => {
+    try {
+        const {id} = req.params
+        const user = await User.findById(id)
+        if(!user) {
+            return res.status(404).json({
+                message:"User not found"
+            })
+        }
+        res.status(200).json({
+            user
+        })
+    }catch(error) {
+        return res.status(500).json({
+            message:error.message
+        })
     }
 }

@@ -1,4 +1,5 @@
 import Blog from "../models/Blog.js"
+import User from "../models/User.js"
 
 export const createBlog = async (req,res) => {
     try {
@@ -8,6 +9,12 @@ export const createBlog = async (req,res) => {
                 message:"All fields are required"
             })
         }
+        const user = await User.findById(owner)
+        if(!user) {
+            return res.status(404).json({
+                message:"User not found"
+            })
+        }
         const blog = await Blog.create({
             owner,
             title,
@@ -15,6 +22,9 @@ export const createBlog = async (req,res) => {
         })
 
         await blog.save()
+        user.blogs.push(blog)
+        await user.save()
+        
         return res.status(201).json({
             message: 'Blog Created Successfully!'
         })

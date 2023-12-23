@@ -5,11 +5,30 @@ import { Link } from 'react-router-dom'
 import Blogs from '../components/Blogs'
 import axios from 'axios'
 import { NotePencil } from '@phosphor-icons/react' 
+import ErrorPage from "./ErrorPage";
 
 const Profile = () => {
     const {username} = useParams()
     const [tab,setTab] = useState("Home")
-    const [user, setUser] = useState(null)   
+    const [user, setUser] = useState(null)
+    const [bio, setBio] = useState("")   
+    const [err,setErr] = useState("")
+
+    const editBio = async () => {
+      try {
+        const data = await axios.put("http://localhost:3000/api/edit/bio",{
+          username,bio
+        })
+        alert("Bio updated successfully")
+        setUser({
+          ...user,
+          bio: bio
+        })
+      }catch(error) {
+        alert(error.response.data.message)
+        return
+      }
+    }
 
     useEffect(() => {
       const getProfile = async () => {
@@ -18,18 +37,22 @@ const Profile = () => {
           setUser(data.data.user)
 
         } catch (error) {
-          alert(error.response.data.message)
+          if(error.response.data.message!=='User not found')
+            alert(error.response.data.message)
+          else
+            setErr(error.response.data.message)
+          return
         }
       }
       getProfile()
     },[username])
 
-    useEffect(()=>{
-      console.log(user)
-    },[user])
   return (
     <>
-      {user && (
+      {err === "User not found" ? (
+        <ErrorPage />
+      ) : (
+        user && 
         <div className="flex flex-col justify-center items-center mt-5 w-[900px] mx-auto">
           <div className="flex flex-col items-center">
             <img
@@ -41,9 +64,9 @@ const Profile = () => {
             <h2 className="capitalize text-5xl font-semibold ">
               {user && user.name}
             </h2>
-            <p className="text-gray-500">{user && user.username}</p>
+            <p className="text-gray-500 text-xl">{user && user.username}</p>
             <Link className=" flex items-center gap-2 mt-2" to={"edit"}>
-              <NotePencil size={20} className='text-gray-800' />
+              <NotePencil size={20} className="text-gray-800" />
               Edit Profile
             </Link>
           </div>
@@ -70,23 +93,35 @@ const Profile = () => {
           <div className="w-full">
             {tab === "Home" ? (
               user && user.blogs.length > 0 ? (
-                <Blogs />
+                <Blogs blogs={user.blogs} />
               ) : (
-                <p className="mx-4 mt-5 text-2xl font-semibold text-gray-500">
+                <p className="px-4 border-t pt-5 text-2xl font-semibold text-gray-500">
                   No blogs created yet
                 </p>
               )
             ) : (
               <div className="border-t py-4">
-                
-                {
-                  user && user.bio ? <p>{user.bio}</p> : <div>
-                    <TextareaAutosize placeholder= "write about yourself..." className="outline-none resize-none w-full text-xl"/>
+                {user && user.bio ? (
+                  <p className="text-xl px-4">{user.bio}</p>
+                ) : (
+                  <div>
+                    <TextareaAutosize
+                      placeholder="write about yourself..."
+                      className="outline-none resize-none w-full text-xl"
+                      value={bio}
+                      onChange={(e) => setBio(e.target.value)}
+                    />
                     <div className="w-full py-10 flex justify-end">
-                      <button className="btn px-10 py-1 font-bold">Save</button>
+                      <button
+                        className="btn px-10 py-1 font-bold"
+                        disabled={bio.length === 0}
+                        onClick={editBio}
+                      >
+                        Save
+                      </button>
                     </div>
-                    </div>
-                  }
+                  </div>
+                )}
               </div>
             )}
           </div>
