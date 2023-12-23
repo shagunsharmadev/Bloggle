@@ -9,6 +9,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import Cookies from 'js-cookie'
 import { useEffect, useState } from 'react'
 import Profile from './pages/Profile'
+import Blog from './pages/Blog'
 
 function App() {
   const [token,setToken] = useState(Cookies.get('token')||'')
@@ -22,13 +23,24 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/" element={<Home />} />
-        <Route path='/create-blog' element= {
-          <ProtectedRoute token={token}>
-            <CreateBlog/>
-          </ProtectedRoute>
-        }/>
+        <Route
+          path="/create-blog"
+          element={
+            <ProtectedRoute token={token}>
+              <CreateBlog />
+            </ProtectedRoute>
+          }
+        />
 
-        <Route path='/:username' element={<Profile/>}/>
+        <Route path="/:username" element={<Profile />} />
+        <Route
+          path="/blog/:blogId"
+          element={
+            <ProtectedRoute token={token}>
+              <Blog />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </Router>
   );

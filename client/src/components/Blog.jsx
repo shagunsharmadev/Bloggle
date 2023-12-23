@@ -1,13 +1,9 @@
 import { BookmarksSimple } from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "@phosphor-icons/react";
-import { useEffect } from "react";
 import {htmlToText} from 'html-to-text'
 
 const Blog = ({blog}) => {
-    useEffect(()=>{
-      console.log(blog)
-    },[])
 
     const formatDate = (dateTime)=>{
       const date = new Date(dateTime);
@@ -34,7 +30,7 @@ const Blog = ({blog}) => {
     return (
       <>
         {blog && (
-          <Link className="blog-anim_link border-t w-full h-[200px] p-4 flex flex-col gap-2 cursor-pointer relative overflow-hidden hover:px-6 duration-300 ease-in-out">
+          <Link to={`/blog/${blog._id}`} className="blog-anim_link border-t w-full h-[200px] p-4 flex flex-col gap-2 cursor-pointer relative overflow-hidden hover:px-6 duration-300 ease-in-out">
             <div className="blog-anim absolute inset-0 w-full bg-primary"></div>
             <div className="flex items-center gap-2 z-20">
               <img
