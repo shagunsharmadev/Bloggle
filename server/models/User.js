@@ -16,6 +16,22 @@ const userSchema = new mongoose.Schema({
         required:true,
         minlength:6
     },
+    avatar:{
+        public_id:String,
+        url:String,
+    },
+    name:{
+        type:String,
+        required:true,
+    },
+    bio:{
+        type:String,
+    },
+    blogs:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Blog"
+    }]
+
 },{
     timestamps:true
 })

@@ -4,8 +4,8 @@ import bcrypt from 'bcrypt'
 
 export const register = async(req,res) => {
     try {
-       const {username,email,password} = req.body
-       if(!username || !email || !password) {
+       const {username,email,password,name} = req.body
+       if(!username || !email || !password || !name) {
         return res.status(400).json ({
             message:"All fields are required"
         })
@@ -20,10 +20,15 @@ export const register = async(req,res) => {
        const hashedPass = await bcrypt.hash(password,10)
 
        const newUser = await User.create({
-        username,
-        email,
-        password:hashedPass
-       })
+         username,
+         email,
+         name,
+         avatar: {
+           public_id: "Bloggle/Profiles/default_profile_nsnxfk",
+           url: "https://res.cloudinary.com/dnlgbefvz/image/upload/v1703334115/Bloggle/Profiles/default_profile_nsnxfk.webp",
+         },
+         password: hashedPass,
+       });
 
        await newUser.save()
 
@@ -81,5 +86,26 @@ export const login = async(req,res)=>{
             message:error.message
         })
         
+    }
+}
+
+export const getUserProfile = async (req,res) => {
+    try {
+
+        const {username} = req.params
+        const user = await User.findOne({username})
+        if(!user) {
+            return res.status(404).json({
+                message:"User not found"
+            })
+        }
+        
+        res.status(200).json({
+            user
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message:error.message
+        })        
     }
 }
