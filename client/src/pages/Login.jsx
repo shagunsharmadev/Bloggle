@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import LoginImg from '../assets/man-riding-a-rocket.svg'
 import LoginForm from '../components/LoginForm'
+import { useEffect } from 'react';
+import Cookies from 'js-cookie';
 
 const Login = () =>{
 
