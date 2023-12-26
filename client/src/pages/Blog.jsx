@@ -1,24 +1,53 @@
-import React from 'react'
-import { useParams } from 'react-router-dom'
+import React, { useEffect , useState} from 'react'
+import {ArrowLeft} from '@phosphor-icons/react'
+import { useNavigate, useParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
+import axios from 'axios'
 
 const Blog = () => {
-    const {blogId} = useParams()
-  return (
-    <div className="w-3/4 mx-auto mt-5">
-      <Link className='flex items-center gap-2'>
-        <img
-          src="https://res.cloudinary.com/dnlgbefvz/image/upload/v1703334115/Bloggle/Profiles/default_profile_nsnxfk.webp"
-          alt="Profile" className='w-8 h-8 rounded-full border'
-        />
-        <span>Username</span>
-      </Link>
+  const navigate = useNavigate()
+  const {blogId} = useParams()
+  const [blog, setBlog] = useState(null)
 
-      <div className='mt-5'>
-        <h1 className="text-8xl font-bold mb-5">Blog Title</h1>
-        <div className="text-sm">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat minus praesentium ratione iusto distinctio, voluptatum esse obcaecati consequatur officia molestiae laboriosam! Sint saepe, deserunt sequi eveniet nam reiciendis esse doloribus ducimus pariatur tenetur ipsa, laborum repellat neque voluptas excepturi eos voluptate assumenda nesciunt alias tempore architecto a? Ipsam aut quo eius eveniet repudiandae, corporis impedit accusamus veritatis. Amet omnis nihil ex dolores, repellat et delectus? Accusantium, delectus. Quis commodi temporibus consequatur optio, sed expedita unde ea doloremque deserunt asperiores magnam praesentium, id ullam. Ducimus quasi illo nulla molestias repellendus veritatis corrupti amet illum, aut totam officiis. Nobis cum voluptates quod.</div>
-      </div>
-    </div>
+  useEffect(() => {
+    const getBlog = async () => {
+      try {
+        const data = await axios.get(`http://localhost:3000/api/blog/${blogId}`)
+        setBlog(data.data.blog)
+        
+      } catch (error) {
+        alert(error.response.data.message)
+        return
+      }
+    }
+    getBlog()
+  },[blogId])
+  return (
+    <>
+      {blog && (
+        <div className="w-3/4 mx-auto mt-5">
+          <div className="flex gap-4 items-center">
+            <button onClick={() => navigate(-1)}>
+              <ArrowLeft size={20} color="#000" />
+            </button>
+            <Link to = {`/${blog.owner.username}`} className="flex items-center gap-2">
+              <img
+                src={blog.owner.avatar.url}
+                alt="Profile"
+                className="w-8 h-8 rounded-full border"
+              />
+              <span>{blog.owner.username}</span>
+            </Link>
+          </div>
+
+          <div className="mt-5">
+            <h1 className="text-8xl font-bold mb-5">{blog.title}</h1>
+            <div className="blog-content" dangerouslySetInnerHTML={{__html:blog.content}}>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 

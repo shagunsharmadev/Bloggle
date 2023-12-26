@@ -10,8 +10,16 @@ const Navbar = () => {
     },[Cookies.get('token')])
     return (
       <nav className="flex justify-between items-center border-b px-16 py-4 sticky top-0 bg-white z-30">
-        <Link to='/' className="logo text-4xl font-bold">Bloggle</Link>
+        <Link to="/" className="logo text-4xl font-bold">
+          Bloggle
+        </Link>
         <div className="flex items-center gap-6">
+          <Link
+            to="/create-blog"
+            className="bg-primary rounded-full p-2 duration-300 ease-in-out hover:rotate-90"
+          >
+            <Plus size={20} className="text-black" />
+          </Link>
           {!token ? (
             <Link
               to="/login"
@@ -28,12 +36,6 @@ const Navbar = () => {
               />
             </Link>
           )}
-          <Link
-            to="/create-blog"
-            className="bg-primary rounded-full p-2 duration-300 ease-in-out hover:rotate-90"
-          >
-            <Plus size={20} className="text-black" />
-          </Link>
         </div>
       </nav>
     );
